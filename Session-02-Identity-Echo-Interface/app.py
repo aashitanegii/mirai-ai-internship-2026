@@ -1,16 +1,10 @@
 import streamlit as st
-
-# Title
 st.title("The Identity Echo Interface")
-
-# Description
 st.write("Enter your name and message below.")
 
-# Inputs
 user_name = st.text_input("Enter your Name")
 user_message = st.text_input("Enter your Message")
 
-# Button
 if st.button("Transmit"):
 
     if user_name == "":
@@ -24,7 +18,6 @@ if st.button("Transmit"):
             f"Transmission successful! Greetings, {user_name}. We received your message: {user_message}"
         )
 
-        # Bonus Task
         token_count = len(user_message) / 4
 
         st.info(
