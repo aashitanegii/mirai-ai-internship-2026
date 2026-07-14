@@ -1,4 +1,5 @@
 import os
+import time
 import streamlit as st
 from dotenv import load_dotenv
 from google import genai
@@ -23,26 +24,39 @@ st.set_page_config(
 st.title("⚽ Football Legends AI Multiverse")
 
 # ---------------------------------------------------
-# 2. INITIALIZE THE MEMORY VAULT (Task 1)
+# 2. AVATAR MAP
+# ---------------------------------------------------
+AVATARS = {
+    "Cristiano Ronaldo": "🐐",
+    "Lionel Messi": "⚽",
+    "Pele": "👑",
+    "Diego Maradona": "🔥",
+    "Zinedine Zidane": "🎩",
+}
+
+# ---------------------------------------------------
+# 3. INITIALIZE THE MEMORY VAULT (Task 1)
 # ---------------------------------------------------
 if "messages" not in st.session_state:
     st.session_state.messages = []
 
 # ---------------------------------------------------
-# 3. SIDEBAR - PLAYER / PERSONALITY SELECTION
+# 4. SIDEBAR - PLAYER / PERSONALITY SELECTION
 # ---------------------------------------------------
 st.sidebar.title("🌍 Football Multiverse")
 st.sidebar.markdown("Choose a legend and personality to begin your AI conversation.")
 
 player = st.sidebar.selectbox(
     "Select a player:",
-    ["Cristiano Ronaldo", "Lionel Messi", "Pele", "Diego Maradona", "Zinedine Zidane"]
+    list(AVATARS.keys())
 )
 
 personality = st.sidebar.selectbox(
     "Select personality mode:",
     ["Motivational Coach", "Trash Talker", "Humble Legend", "Tactical Analyst"]
 )
+
+commentary_mode = st.sidebar.toggle("🎙️ Match Commentary Mode")
 
 st.sidebar.markdown("---")
 st.sidebar.success(f"🏆 {player}")
@@ -54,23 +68,23 @@ if st.sidebar.button("🗑️ Clear Chat"):
     st.rerun()
 
 # ---------------------------------------------------
-# 4. WELCOME MESSAGE
+# 5. WELCOME MESSAGE
 # ---------------------------------------------------
 st.markdown("""
 ### 🏟️ Welcome to the Football Legends AI Multiverse!
-Travel across different football universes and chat with legendary players.
 Choose a legend from the sidebar and start your conversation.
 """)
 
 # ---------------------------------------------------
-# 5. RENDER CHAT HISTORY (Task 2)
+# 6. RENDER CHAT HISTORY (Task 2)
 # ---------------------------------------------------
 for message in st.session_state.messages:
-    with st.chat_message(message["role"]):
+    avatar = AVATARS.get(player, "⚽") if message["role"] == "assistant" else "🧑"
+    with st.chat_message(message["role"], avatar=avatar):
         st.markdown(message["content"])
 
 # ---------------------------------------------------
-# 6. CHAT INPUT (Task 3)
+# 7. CHAT INPUT (Task 3)
 # ---------------------------------------------------
 if user_message := st.chat_input("Ask your football legend..."):
 
@@ -78,10 +92,15 @@ if user_message := st.chat_input("Ask your football legend..."):
     st.session_state.messages.append(
         {"role": "user", "content": user_message}
     )
-    with st.chat_message("user"):
+    with st.chat_message("user", avatar="🧑"):
         st.markdown(user_message)
 
-    # ---- Build the prompt with player + personality context ----
+    # ---- Build prompt (with optional commentary mode) ----
+    mode_instruction = (
+        "Describe your answer like a live football match commentator, energetic and dramatic."
+        if commentary_mode else ""
+    )
+
     final_prompt = f"""
     You are {player}.
     Your personality is: {personality}.
@@ -90,25 +109,44 @@ if user_message := st.chat_input("Ask your football legend..."):
     Reply naturally like the real football legend.
     Keep responses under 120 words.
     Use real football knowledge whenever appropriate.
+    {mode_instruction}
     User:
     {user_message}
     """
 
-    # ---- Call Gemini API ----
-    with st.chat_message("assistant"):
-        with st.spinner(f"⚽ {player} is preparing a response..."):
-            try:
-                response = client.models.generate_content(
-                    model="gemini-2.5-flash",
-                    contents=final_prompt
-                )
-                reply = response.text
-            except Exception as e:
-                reply = f"Error: {e}"
-
-            st.markdown(reply)
+    # ---- Call Gemini API with streaming (typewriter effect) ----
+    with st.chat_message("assistant", avatar=AVATARS.get(player, "⚽")):
+        placeholder = st.empty()
+        full_reply = ""
+        try:
+            stream = client.models.generate_content_stream(
+                model="gemini-2.5-flash",
+                contents=final_prompt
+            )
+            for chunk in stream:
+                if chunk.text:
+                    full_reply += chunk.text
+                    placeholder.markdown(full_reply + "▌")
+                    time.sleep(0.01)
+            placeholder.markdown(full_reply)
+        except Exception as e:
+            full_reply = f"Error: {e}"
+            placeholder.markdown(full_reply)
 
     # ---- Save AI response (Task 4) ----
     st.session_state.messages.append(
-        {"role": "assistant", "content": reply}
+        {"role": "assistant", "content": full_reply}
+    )
+
+# ---------------------------------------------------
+# 8. DOWNLOAD CONVERSATION
+# ---------------------------------------------------
+if st.session_state.messages:
+    transcript = "\n\n".join(
+        f"{m['role'].upper()}: {m['content']}" for m in st.session_state.messages
+    )
+    st.download_button(
+        "📥 Download Conversation",
+        transcript,
+        file_name=f"chat_with_{player.replace(' ', '_')}.txt"
     )
