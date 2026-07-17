@@ -1,7 +1,4 @@
 
----
-
-````md
 # 🎨 AI Image Studio (Assignment 4)
 
 ## MirAI School of Technology
