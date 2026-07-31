@@ -3,21 +3,6 @@
 # Topic — AI Application Development, Speech Recognition & Project Ideas
 ---
 
-# Session Timeline
-
-* 1:15:52 — Introduction & Greetings
-* 1:18:51 — AI Application Development Overview
-* 1:21:59 — Web Application Development with AI
-* 1:25:14 — Text and Image Processing with AI
-* 1:29:32 — Library Efficiency and Use Cases
-* 1:37:31 — Client-Side Audio Capture Challenges
-* 1:45:32 — Streamlit Library for Audio Capture
-* 2:00:10 — Project Ideas and Innovations
-* 2:10:50 — Real-World Applications of AI
-* 2:17:28 — Conclusion & Future Topics
-
----
-
 # 1. Introduction
 
 The session focused on how AI applications are actually built in production.
