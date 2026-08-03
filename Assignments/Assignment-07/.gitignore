@@ -1,0 +1,12 @@
+# Virtual environments
+venv/
+env/
+.venv/
+
+# Streamlit secrets
+.streamlit/
+
+# Python artifacts
+__pycache__/
+*.pyc
+*.pyo
