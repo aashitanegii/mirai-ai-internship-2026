@@ -1,11 +1,15 @@
 import streamlit as st
 import pandas as pd
 import google.generativeai as genai
+from pathlib import Path
 from urllib.parse import quote
 
 # =========================================================
 # CONFIGURATION
 # =========================================================
+APP_DIR = Path(__file__).resolve().parent
+DATA_FILE = APP_DIR / "screentime.csv"
+
 st.set_page_config(page_title="Life-OS Wellbeing Dashboard", page_icon="📱", layout="wide")
 
 # =========================================================
@@ -14,7 +18,7 @@ st.set_page_config(page_title="Life-OS Wellbeing Dashboard", page_icon="📱", l
 @st.cache_data
 def load_data():
     """Load the synthetic screen time dataset from CSV."""
-    df = pd.read_csv("screentime.csv")
+    df = pd.read_csv(DATA_FILE)
     df["Date"] = pd.to_datetime(df["Date"]).dt.date
     return df
 
@@ -35,7 +39,7 @@ def summarize_day_usage(day_df):
 try:
     df = load_data()
 except FileNotFoundError:
-    st.error("Error: 'screentime.csv' was not found. Please run generate_data.py first.")
+    st.error(f"Error: '{DATA_FILE.name}' was not found. Please run generate_data.py first.")
     st.stop()
 
 # =========================================================

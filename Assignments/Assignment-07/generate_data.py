@@ -1,5 +1,6 @@
 import random
 from datetime import datetime, timedelta
+from pathlib import Path
 
 import pandas as pd
 
@@ -44,5 +45,6 @@ for offset in range(14):
 
 # Save to CSV in the current project folder
 output_df = pd.DataFrame(data, columns=["Date", "App_Name", "Category", "Minutes_Used"])
-output_df.to_csv("screentime.csv", index=False)
-print("✅ screentime.csv generated successfully with 14 days of synthetic data.")
+output_path = Path(__file__).resolve().parent / "screentime.csv"
+output_df.to_csv(output_path, index=False)
+print(f"✅ screentime.csv generated successfully at {output_path}.")

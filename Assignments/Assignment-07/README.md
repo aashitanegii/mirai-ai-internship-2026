@@ -2,6 +2,8 @@
 
 This project is a Streamlit-based capstone dashboard that visualizes synthetic screen time data, gives AI-powered coaching advice, and shows a dynamic guilt-trip avatar based on the user's daily performance.
 
+LIVE DEPLOYMENT LINK - https://life-os-ai-dashboard-mirai.streamlit.app/
+
 ## Files included
 - app.py — the full Streamlit dashboard
 - generate_data.py — creates a synthetic screentime.csv file
