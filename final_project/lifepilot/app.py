@@ -75,7 +75,31 @@ st.markdown(
         h2 { font-size: 1.55rem; margin: 0; }
         .eyebrow { color: var(--accent); font-family: 'Trebuchet MS', sans-serif; font-size: 0.7rem; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; margin-bottom: 0.55rem; }
         .subtitle { color: var(--muted); font-family: 'Trebuchet MS', sans-serif; font-size: 0.98rem; line-height: 1.55; margin: 0.6rem 0 0; max-width: 58ch; }
-        .hero { align-items: end; background: linear-gradient(125deg, #ffffff 0%, #edf5ef 100%); border: 1px solid var(--border); border-radius: 14px; display: flex; justify-content: space-between; min-height: 245px; padding: 2.1rem 2.3rem; margin: 1.2rem 0 1.4rem; box-shadow: var(--shadow); }
+        .hero { 
+            align-items: start; 
+            background: url("https://images.unsplash.com/photo-1506744626753-f327718029d2?q=80&w=2940&auto=format&fit=crop") center/cover no-repeat; 
+            border: 1px solid var(--border); 
+            border-radius: 14px; 
+            display: flex; 
+            justify-content: space-between; 
+            min-height: 320px; 
+            padding: 2.5rem 3rem; 
+            margin: 1.2rem 0 1.4rem; 
+            box-shadow: var(--shadow); 
+            position: relative;
+            overflow: hidden;
+        }
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: linear-gradient(90deg, rgba(255,255,255,1) 30%, rgba(255,255,255,0.85) 50%, rgba(255,255,255,0) 100%);
+            z-index: 1;
+        }
+        .hero > div {
+            position: relative;
+            z-index: 2;
+        }
         .hero-status { color: var(--success); font: 700 0.68rem 'Trebuchet MS', sans-serif; letter-spacing: 0.12em; text-transform: uppercase; white-space: nowrap; }
         .hero-date { color: var(--muted); font: 0.8rem 'Trebuchet MS', sans-serif; margin-top: 0.55rem; text-align: right; }
         .hero-state { background: rgba(255, 255, 255, 0.72); border: 1px solid rgba(38, 122, 97, 0.16); border-radius: 10px; margin-top: 1.1rem; min-width: 245px; padding: 1rem 1.1rem; }
@@ -103,6 +127,7 @@ st.markdown(
         [data-testid="stExpander"] { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; }
         [data-testid="stRadio"] label p, [data-testid="stSelectbox"] label p, [data-testid="stTextArea"] label p { font-family: 'Trebuchet MS', sans-serif; }
         [data-testid="stMain"] [data-testid="stRadio"] [role="radio"] { color: #314239; font-weight: 700; }
+        textarea, input { color: var(--text) !important; }
         @media (max-width: 720px) { .hero { align-items: start; flex-direction: column; gap: 1.5rem; min-height: auto; padding: 1.5rem; } .hero-date { text-align: left; } }
     </style>
     """,
@@ -179,9 +204,9 @@ def load_demo_day() -> None:
         [
             {"Task": "Finish DAA assignment", "Duration_Min": 90, "Priority": "High", "Deadline": date.today(), "Category": "Academic", "Status": "Not Started"},
             {"Task": "Study OS", "Duration_Min": 120, "Priority": "Medium", "Deadline": date.today(), "Category": "Academic", "Status": "Not Started"},
-            {"Task": "Work on internship project", "Duration_Min": 90, "Priority": "High", "Deadline": "", "Category": "Work", "Status": "In Progress"},
+            {"Task": "Work on internship project", "Duration_Min": 90, "Priority": "High", "Deadline": "", "Category": "Work", "Status": "Completed"},
             {"Task": "Reply to professor", "Duration_Min": 15, "Priority": "High", "Deadline": date.today(), "Category": "Academic", "Status": "Completed"},
-            {"Task": "Go to the gym", "Duration_Min": 45, "Priority": "Low", "Deadline": "", "Category": "Health", "Status": "Not Started"},
+            {"Task": "Go to the gym", "Duration_Min": 45, "Priority": "Low", "Deadline": "", "Category": "Health", "Status": "Completed"},
             {"Task": "Prepare Friday presentation", "Duration_Min": 60, "Priority": "Medium", "Deadline": "", "Category": "Academic", "Status": "Not Started"},
         ],
         columns=TASK_COLUMNS,
@@ -310,9 +335,13 @@ st.markdown(
     f"""
     <div class="hero">
         <div>
-            <div class="eyebrow">Personal command center</div>
-            <h1>Your day,<br>made executable.</h1>
-            <p class="subtitle">LifePilot turns scattered thoughts, deadlines and unexpected interruptions into an executable plan.</p>
+            <div style="font-weight: 700; color: #17221c; font-family: 'Trebuchet MS', sans-serif; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.4rem;">
+                Good morning, Aashita <span style="font-size: 1.1rem;">👋</span>
+            </div>
+            <h1 style="color: #17221c; margin-bottom: 0.5rem; line-height: 1.1;">Your day,<br><span style="color: var(--accent);">intelligently<br>navigated.</span></h1>
+            <p class="subtitle" style="max-width: 42ch; margin-top: 1rem; color: #404a44;">
+                LifePilot turns scattered thoughts, deadlines, and interruptions into a realistic plan — and adapts with you.
+            </p>
         </div>
         <div>
             <div class="hero-status">● System ready</div>
@@ -338,6 +367,72 @@ kpi_columns[3].metric(
     "PLANNED HOURS", f"{planned_hours:.1f} h",
     delta=f"{-capacity_delta:.1f} h buffer" if capacity_delta <= 0 else f"+{capacity_delta:.1f} h over",
     delta_color="normal" if capacity_delta <= 0 else "inverse",
+)
+
+
+st.markdown(
+    """
+    <style>
+    .workflow-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 1rem; margin: 2rem 0; }
+    .workflow-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 1.25rem 1rem; box-shadow: 0 4px 12px rgba(0,0,0,0.03); display: flex; flex-direction: column; gap: 0.5rem; text-decoration: none !important; color: inherit !important; transition: transform 0.2s, box-shadow 0.2s; }
+    .workflow-card:hover { transform: translateY(-3px); box-shadow: 0 8px 24px rgba(0,0,0,0.06); }
+    .wf-header { display: flex; align-items: center; gap: 0.5rem; }
+    .wf-number { font-size: 0.7rem; font-weight: 700; background: var(--bg); padding: 0.2rem 0.5rem; border-radius: 99px; }
+    .wf-title { font-size: 0.75rem; font-weight: 700; font-family: 'Trebuchet MS', sans-serif; letter-spacing: 0.05em; }
+    .wf-icon { font-size: 1.8rem; margin: 0.5rem 0; }
+    .wf-heading { font-weight: 700; font-family: 'Trebuchet MS', sans-serif; font-size: 0.95rem; line-height: 1.2; margin-bottom: 0.25rem; }
+    .wf-desc { font-size: 0.8rem; color: var(--muted); line-height: 1.4; flex-grow: 1; }
+    .wf-action { font-size: 0.8rem; font-weight: 700; display: flex; justify-content: space-between; align-items: center; margin-top: 1rem; padding-top: 0.75rem; border-top: 1px solid var(--border); }
+    
+    .wf-c1 .wf-number { color: #166534; background: #dcfce7; } .wf-c1 .wf-title, .wf-c1 .wf-icon, .wf-c1 .wf-action { color: #166534; }
+    .wf-c2 .wf-number { color: #9a3412; background: #ffedd5; } .wf-c2 .wf-title, .wf-c2 .wf-icon, .wf-c2 .wf-action { color: #9a3412; }
+    .wf-c3 .wf-number { color: #5b21b6; background: #ede9fe; } .wf-c3 .wf-title, .wf-c3 .wf-icon, .wf-c3 .wf-action { color: #5b21b6; }
+    .wf-c4 .wf-number { color: #1e40af; background: #dbeafe; } .wf-c4 .wf-title, .wf-c4 .wf-icon, .wf-c4 .wf-action { color: #1e40af; }
+    .wf-c5 .wf-number { color: #0f766e; background: #ccfbf1; } .wf-c5 .wf-title, .wf-c5 .wf-icon, .wf-c5 .wf-action { color: #0f766e; }
+    
+    @media (max-width: 1024px) { .workflow-grid { grid-template-columns: repeat(3, 1fr); } }
+    @media (max-width: 640px) { .workflow-grid { grid-template-columns: 1fr; } }
+    </style>
+    
+    <div class="workflow-grid">
+        <a href="#capture" class="workflow-card wf-c1">
+            <div class="wf-header"><span class="wf-number">01</span><span class="wf-title">CAPTURE</span></div>
+            <div class="wf-icon">💬</div>
+            <div class="wf-heading">Get it out of your head</div>
+            <div class="wf-desc">Text, voice, or camera. LifePilot turns messy input into structured tasks.</div>
+            <div class="wf-action"><span>Start Capturing</span> <span>→</span></div>
+        </a>
+        <a href="#plan" class="workflow-card wf-c2">
+            <div class="wf-header"><span class="wf-number">02</span><span class="wf-title">PLAN</span></div>
+            <div class="wf-icon">📅</div>
+            <div class="wf-heading">Create your mission</div>
+            <div class="wf-desc">AI plans your day around deadlines, energy, and available time.</div>
+            <div class="wf-action"><span>View My Plan</span> <span>→</span></div>
+        </a>
+        <a href="#execute" class="workflow-card wf-c3">
+            <div class="wf-header"><span class="wf-number">03</span><span class="wf-title">EXECUTE</span></div>
+            <div class="wf-icon">⚡</div>
+            <div class="wf-heading">Focus on what matters</div>
+            <div class="wf-desc">See what to do now, next, and later. Update progress as you go.</div>
+            <div class="wf-action"><span>Open Execute</span> <span>→</span></div>
+        </a>
+        <a href="#adapt" class="workflow-card wf-c4">
+            <div class="wf-header"><span class="wf-number">04</span><span class="wf-title">ADAPT</span></div>
+            <div class="wf-icon">🔄</div>
+            <div class="wf-heading">When life happens</div>
+            <div class="wf-desc">Replan instantly when things change. Stay on track without starting over.</div>
+            <div class="wf-action"><span>Replan My Day</span> <span>→</span></div>
+        </a>
+        <a href="#reflect" class="workflow-card wf-c5">
+            <div class="wf-header"><span class="wf-number">05</span><span class="wf-title">REFLECT</span></div>
+            <div class="wf-icon">📊</div>
+            <div class="wf-heading">Learn & improve</div>
+            <div class="wf-desc">See what got done, what remains, and how you can improve tomorrow.</div>
+            <div class="wf-action"><span>View Insights</span> <span>→</span></div>
+        </a>
+    </div>
+    """,
+    unsafe_allow_html=True
 )
 
 
