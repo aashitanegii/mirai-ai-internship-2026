@@ -216,6 +216,7 @@ with st.sidebar:
             <a href="#overview">⌂ Overview</a>
             <a href="#capture">✦ Capture</a>
             <a href="#plan">◈ Plan</a>
+            <a href="#execute">⚡ Execute</a>
             <a href="#adapt">↻ Adapt</a>
             <a href="#reflect">◫ Reflect</a>
         </nav>
@@ -521,45 +522,147 @@ else:
     st.success(f"Plan fits your available time with {(available_minutes - total_task_minutes) / 60:.1f} hours to spare.")
 
 
+st.markdown('<div id="execute"></div>', unsafe_allow_html=True)
 st.markdown(
-    '<div class="eyebrow">EXECUTE</div><div class="section-heading"><span class="section-mark"></span><h2>Task Control Center</h2></div>',
+    '<div class="eyebrow">03 / EXECUTE</div><div class="section-heading"><span class="section-mark"></span><h2>Task Control Center</h2></div>',
     unsafe_allow_html=True,
 )
 if tasks_df.empty:
     st.info("No tasks yet. Add your first task above to start shaping today's plan.")
+else:
+    def update_task_status(idx, new_status):
+        st.session_state.tasks_df.at[idx, "Status"] = new_status
+        if not st.session_state.schedule_df.empty:
+            st.session_state.schedule_stale = True
+        st.session_state.change_log.append({"action": "status_updated"})
+        st.rerun()
 
-tasks_for_editor = tasks_df.copy()
-tasks_for_editor["Deadline"] = pd.to_datetime(
-    tasks_for_editor["Deadline"], errors="coerce"
-).dt.date
-edited_tasks = st.data_editor(
-    tasks_for_editor,
-    key="task_editor",
-    hide_index=True,
-    width="stretch",
-    num_rows="dynamic",
-    column_config={
-        "Task": st.column_config.TextColumn("Task", required=True),
-        "Duration_Min": st.column_config.NumberColumn(
-            "Duration (min)", min_value=1, step=5, required=True
-        ),
-        "Priority": st.column_config.SelectboxColumn(
-            "Priority", options=["Low", "Medium", "High"], required=True
-        ),
-        "Deadline": st.column_config.DateColumn("Deadline", format="YYYY-MM-DD"),
-        "Category": st.column_config.SelectboxColumn(
-            "Category", options=["Academic", "Work", "Personal", "Health", "Errands", "Other"]
-        ),
-        "Status": st.column_config.SelectboxColumn(
-            "Status", options=["Not Started", "In Progress", "Completed"], required=True
-        ),
-    },
-)
-if not edited_tasks.equals(st.session_state.tasks_df):
-    st.session_state.tasks_df = edited_tasks
+    # Determine Current, Next, Later based on schedule order if available, else tasks_df order
     if not st.session_state.schedule_df.empty:
-        st.session_state.schedule_stale = True
-    st.session_state.change_log.append({"action": "tasks_edited"})
+        # Map scheduled tasks back to original tasks_df index by matching Task name
+        # We'll prioritize tasks that are scheduled and not completed.
+        scheduled_tasks = st.session_state.schedule_df["Task"].tolist()
+        ordered_indices = []
+        for t_name in scheduled_tasks:
+            matches = tasks_df[(tasks_df["Task"] == t_name) & (tasks_df["Status"] != "Completed")].index.tolist()
+            for m in matches:
+                if m not in ordered_indices:
+                    ordered_indices.append(m)
+        # Add remaining non-completed tasks
+        remaining_indices = tasks_df[~tasks_df.index.isin(ordered_indices) & (tasks_df["Status"] != "Completed")].index.tolist()
+        active_indices = ordered_indices + remaining_indices
+    else:
+        active_indices = tasks_df[tasks_df["Status"] != "Completed"].index.tolist()
+
+    in_progress = tasks_df[tasks_df["Status"] == "In Progress"].index.tolist()
+    
+    current_idx = None
+    if in_progress:
+        current_idx = in_progress[0]
+    elif active_indices:
+        current_idx = active_indices[0]
+
+    st.markdown('<div class="eyebrow" style="margin-top: 1.5rem;">CURRENT</div>', unsafe_allow_html=True)
+    if current_idx is not None:
+        task = tasks_df.loc[current_idx]
+        with st.container(border=True):
+            cols = st.columns([3, 1])
+            with cols[0]:
+                st.markdown(f"**{task['Task']}**")
+                st.caption(f"{task['Duration_Min']} min · {task['Priority'].upper()} PRIORITY")
+            with cols[1]:
+                status = st.selectbox(
+                    "Status",
+                    options=["Not Started", "In Progress", "Completed"],
+                    index=["Not Started", "In Progress", "Completed"].index(task["Status"]),
+                    key=f"status_{current_idx}",
+                    label_visibility="collapsed"
+                )
+                if status != task["Status"]:
+                    update_task_status(current_idx, status)
+    else:
+        st.success("All tasks completed for now! Great job.")
+
+    st.markdown('<div class="eyebrow" style="margin-top: 1.5rem;">NEXT</div>', unsafe_allow_html=True)
+    next_indices = [idx for idx in active_indices if idx != current_idx][:3]
+    if next_indices:
+        for idx in next_indices:
+            task = tasks_df.loc[idx]
+            with st.container(border=True):
+                cols = st.columns([3, 1])
+                with cols[0]:
+                    st.markdown(f"**{task['Task']}**")
+                    st.caption(f"{task['Duration_Min']} min · {task['Priority'].upper()} PRIORITY")
+                with cols[1]:
+                    status = st.selectbox(
+                        "Status",
+                        options=["Not Started", "In Progress", "Completed"],
+                        index=["Not Started", "In Progress", "Completed"].index(task["Status"]),
+                        key=f"status_{idx}",
+                        label_visibility="collapsed"
+                    )
+                    if status != task["Status"]:
+                        update_task_status(idx, status)
+    else:
+        st.caption("No upcoming tasks.")
+
+    st.markdown('<div class="eyebrow" style="margin-top: 1.5rem;">LATER</div>', unsafe_allow_html=True)
+    later_indices = [idx for idx in active_indices if idx != current_idx and idx not in next_indices]
+    if later_indices:
+        for idx in later_indices:
+            task = tasks_df.loc[idx]
+            with st.container(border=True):
+                cols = st.columns([3, 1])
+                with cols[0]:
+                    st.markdown(f"**{task['Task']}**")
+                    st.caption(f"{task['Duration_Min']} min")
+                with cols[1]:
+                    status = st.selectbox(
+                        "Status",
+                        options=["Not Started", "In Progress", "Completed"],
+                        index=["Not Started", "In Progress", "Completed"].index(task["Status"]),
+                        key=f"status_{idx}",
+                        label_visibility="collapsed"
+                    )
+                    if status != task["Status"]:
+                        update_task_status(idx, status)
+    else:
+        st.caption("No remaining active tasks.")
+
+    with st.expander("Full Task Editor (Edit task details)"):
+        tasks_for_editor = tasks_df.copy()
+        tasks_for_editor["Deadline"] = pd.to_datetime(
+            tasks_for_editor["Deadline"], errors="coerce"
+        ).dt.date
+        edited_tasks = st.data_editor(
+            tasks_for_editor,
+            key="task_editor",
+            hide_index=True,
+            width="stretch",
+            num_rows="dynamic",
+            column_config={
+                "Task": st.column_config.TextColumn("Task", required=True),
+                "Duration_Min": st.column_config.NumberColumn(
+                    "Duration (min)", min_value=1, step=5, required=True
+                ),
+                "Priority": st.column_config.SelectboxColumn(
+                    "Priority", options=["Low", "Medium", "High"], required=True
+                ),
+                "Deadline": st.column_config.DateColumn("Deadline", format="YYYY-MM-DD"),
+                "Category": st.column_config.SelectboxColumn(
+                    "Category", options=["Academic", "Work", "Personal", "Health", "Errands", "Other"]
+                ),
+                "Status": st.column_config.SelectboxColumn(
+                    "Status", options=["Not Started", "In Progress", "Completed"], required=True
+                ),
+            },
+        )
+        if not edited_tasks.equals(st.session_state.tasks_df):
+            st.session_state.tasks_df = edited_tasks
+            if not st.session_state.schedule_df.empty:
+                st.session_state.schedule_stale = True
+            st.session_state.change_log.append({"action": "tasks_edited"})
+            st.rerun()
 
 if st.session_state.schedule_stale:
     st.warning("Your task list changed. Regenerate the plan to reflect the update.")

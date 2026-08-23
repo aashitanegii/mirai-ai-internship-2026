@@ -1,113 +1,108 @@
 # LifePilot
 
-## AI Personal Decision & Execution Engine
+## AI-powered personal planning, scheduling, execution, and adaptive replanning
 
-Turn messy thoughts, interruptions, and constraints into a plan you can actually execute.
+Turn messy thoughts, interruptions, and constraints into a realistic mission you can actually execute. LifePilot acts as your personal command center, analyzing your tasks through Google Gemini to help you make intelligent scheduling decisions under capacity constraints.
 
-## Demo
+## Live App
 
-[Live App](#) - deployment URL will be added after deployment.
-
-## Why LifePilot?
-
-Real days contain scattered commitments, shifting energy, interruptions, and more work than available time. LifePilot turns that human input into a transparent, editable plan rather than another generic chatbot conversation.
-
-## Core Features
-
-- Multimodal task capture: text, voice, and camera
-- Gemini structured task extraction
-- Constraint-aware daily scheduling
-- Replan My Day after disruptions
-- Editable tasks and schedules
-- Analytics command center
-- AI reasoning and trade-off explanations
-
-## Usage
-
-1. Capture tasks with a text brain dump, microphone recording, camera image, or Quick Add.
-2. Review and edit the validated task DataFrame before planning.
-3. Set available hours and energy level, then select **Generate My Plan**.
-4. Use **Replan My Day** when an interruption changes the available capacity.
-5. Review the before/after schedule, deferred work, decision reasons, and analytics.
-
-For an evaluator walkthrough, use the sidebar's explicitly labeled **DEMO MODE** controls. **Load Demo Day** adds a local sample scenario; **Clear Demo** returns to an empty state. Demo loading never calls Gemini.
-
-The sidebar's **Planning Preference** is included in the scheduling and replanning context alongside available hours and energy level.
+[Live App](#) - *(Deployment URL to be added after Streamlit Community Cloud deployment)*
 
 ## Screenshots
 
-Add final screenshots here before submission. Recommended captures:
+*(Placeholder for Screenshots)*
 
-- LifePilot command center with KPI cards and capture controls
-- Today's Mission schedule with AI explanation expanded
-- Replan My Day before/after comparison
-- LifeLoad analytics with task and schedule data
+1. **Overview** — Hero banner and Today's State dashboard
+2. **Capture** — Multimodal input forms
+3. **Plan** — AI-generated schedule and explanations
+4. **Execute** — CURRENT / NEXT / LATER execution surface
+5. **Adapt** — Replan comparison before/after
+6. **Reflect** — Data-driven LifeLoad analytics
 
-## How It Works
+## Feature Overview
 
-```text
-Text / Voice / Camera -> Gemini -> Validated JSON -> Pandas Tasks
-    -> Constraints -> Schedule -> Execute / Replan / Analytics
-```
+LifePilot structures the chaotic human day into five distinct workflows:
 
-## Tech Stack
+- **CAPTURE**: Convert messy thoughts into structured tasks via Text, Voice, or Visual (Camera) brain dumps.
+- **PLAN**: Define available hours, energy levels, and planning preferences. Let Gemini build a realistic schedule honoring constraints.
+- **EXECUTE**: A focused control center showing your CURRENT, NEXT, and LATER tasks. Easily track progress and update task statuses.
+- **ADAPT**: Life happens. Handle unexpected disruptions (e.g., surprise meetings, energy crashes) by asking Gemini to Replan your remaining day without starting from scratch.
+- **REFLECT**: Deterministic data views and charts tracking completion rates, workload distribution, and scheduled vs. unscheduled capacity.
 
-Python, Streamlit, Pandas, Altair, Pillow, and the Google Gemini API through `google-genai`.
+## Architecture
 
-## Project Structure
+LifePilot combines Streamlit's reactive UI with Pandas for state management and Google Gemini for intelligent parsing and decision-making. 
 
-```text
-lifepilot/
-|-- app.py
-|-- requirements.txt
-|-- README.md
-|-- TECHNICAL_DESIGN.md
-|-- modules/
-|   |-- __init__.py
-|   |-- ai_engine.py
-|   |-- task_parser.py
-|   |-- scheduler.py
-|   |-- constraints.py
-|   `-- analytics.py
-`-- tests/
-    `-- test_lifepilot.py
-```
-
-## Local Setup
+The architecture strictly delineates AI operations from deterministic constraints:
+- **Gemini** understands inputs, prioritizes tasks, proposes schedules, and explains trade-offs.
+- **Python / Pandas** stores state, calculates capacity, enforces data validation, and manages the execution loop.
 
 ```text
-$ git clone <repository-url>
-$ cd mirai-ai-internship-2026/final_project/lifepilot
-$ python -m venv .venv
-$ .venv\Scripts\activate
-$ pip install -r requirements.txt
+User Input (Text/Voice/Vision)
+         ↓
+    Streamlit UI
+         ↓
+  Gemini Extraction
+         ↓
+ Structured Task JSON
+         ↓
+  Validation Layer
+         ↓
+   Pandas State (tasks_df)
+         ↓
+    Scheduler Engine
+         ↓
+    Execute Layer
+         ↓
+Replanner / Analytics
 ```
 
-Create `.streamlit/secrets.toml` locally:
+For more details, see [TECHNICAL_DESIGN.md](TECHNICAL_DESIGN.md).
 
+## Setup & Deployment
+
+### Local Setup
+
+```bash
+git clone <repository-url>
+cd mirai-ai-internship-2026/final_project/lifepilot
+python -m venv .venv
+# Activate virtual environment (Windows):
+.venv\Scripts\activate
+# Install requirements:
+pip install -r requirements.txt
+```
+
+### Configuration
+
+Create a local `.streamlit/secrets.toml` file to securely store your API key:
 ```toml
-GEMINI_API_KEY = "your-key-here"
+GEMINI_API_KEY = "your-google-gemini-api-key"
 ```
 
-Never commit `.env` or `.streamlit/secrets.toml`. On Streamlit Community Cloud, add `GEMINI_API_KEY` in the app's Secrets settings.
-
-## Run
-
-```text
-$ streamlit run app.py
+### Run Locally
+```bash
+streamlit run app.py
 ```
 
-## Deployment
+### Deployment to Streamlit Community Cloud
+1. Create a new Streamlit app connected to your repository.
+2. Set the main file path to `final_project/lifepilot/app.py`.
+3. Go to Advanced Settings -> Secrets and paste the `GEMINI_API_KEY` configuration.
+4. Deploy!
 
-Create a Streamlit Community Cloud app from the repository, set the main file to `final_project/lifepilot/app.py`, and add the Gemini key in Advanced settings under Secrets. Install dependencies from `final_project/lifepilot/requirements.txt` or deploy from this directory as the app root.
+## Gemini Integration
 
-## Security
+LifePilot uses the official `google-genai` SDK to interact with Google Gemini.
 
-The Gemini key is loaded only through Streamlit secrets. Secret files are excluded from Git, and no key is present in Python source or documentation.
+- **Efficiency**: API calls are explicitly triggered by user actions (e.g., "Generate My Plan", "Replan My Day"). We never blindly call Gemini on page loads, widget changes, or analytics rendering.
+- **Structured Outputs**: Prompts enforce structured JSON returns to ensure reliable parsing.
+- **Explainability**: Scheduling blocks include explicit AI reasoning so you understand *why* a task was scheduled when it was.
 
-## Future Scope
+## Demo Mode
 
-- Calendar integration with explicit user approval
-- Persistent storage with user-controlled export
-- More detailed long-term workload trends
-- Accessibility and keyboard workflow improvements
+For evaluators and quick testing, LifePilot includes a **Demo Mode**. 
+- Open the sidebar and click **Load Demo Day**.
+- This instantly populates a realistic, localized set of tasks and metrics to showcase the application's states.
+- Demo Mode relies on deterministic sample data and **does not consume Gemini API credits**.
+- Use the **Clear Demo** button to return the app to a clean, empty state.
