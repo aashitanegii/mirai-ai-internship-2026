@@ -123,11 +123,35 @@ st.markdown(
         .stButton > button, .stFormSubmitButton > button { border-radius: 6px; font-weight: 600; min-height: 2.55rem; }
         .stFormSubmitButton > button { background: var(--text); border-color: var(--text); color: white; }
         .stFormSubmitButton > button:hover { background: var(--accent); border-color: var(--accent); color: white; }
-        [data-testid="stDataEditor"] { border: 1px solid var(--border); border-radius: 10px; overflow: hidden; }
+        [data-testid="stDataEditor"] { border: 1px solid var(--border); border-radius: 10px; overflow: hidden; background: #ffffff; }
         [data-testid="stExpander"] { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; }
-        [data-testid="stRadio"] label p, [data-testid="stSelectbox"] label p, [data-testid="stTextArea"] label p { font-family: 'Trebuchet MS', sans-serif; }
-        [data-testid="stMain"] [data-testid="stRadio"] [role="radio"] { color: #314239; font-weight: 700; }
-        textarea, input { color: var(--text) !important; }
+        [data-testid="stExpander"] summary p { color: var(--text) !important; font-weight: 600; }
+        
+        /* High Contrast Inputs */
+        div[data-baseweb="input"], div[data-baseweb="textarea"], div[data-baseweb="select"] > div {
+            background-color: #ffffff !important;
+            border: 1px solid var(--border) !important;
+        }
+        textarea, input, div[data-baseweb="select"] span {
+            color: #17221c !important;
+            -webkit-text-fill-color: #17221c !important;
+        }
+        textarea::placeholder, input::placeholder {
+            color: #68756d !important;
+            -webkit-text-fill-color: #68756d !important;
+        }
+        
+        /* High Contrast Labels */
+        [data-testid="stWidgetLabel"] p, [data-testid="stRadio"] label p, [data-testid="stSelectbox"] label p, [data-testid="stTextArea"] label p { 
+            color: #17221c !important; 
+            font-weight: 600 !important;
+        }
+        [data-testid="stMain"] [data-testid="stRadio"] [role="radio"] { color: #17221c; font-weight: 700; }
+        
+        /* Dropdown Menus */
+        ul[data-baseweb="menu"] { background-color: #ffffff !important; }
+        li[role="option"] { color: #17221c !important; }
+
         @media (max-width: 720px) { .hero { align-items: start; flex-direction: column; gap: 1.5rem; min-height: auto; padding: 1.5rem; } .hero-date { text-align: left; } }
     </style>
     """,
@@ -283,12 +307,12 @@ with st.sidebar:
             with st.spinner("LifePilot is balancing your priorities..."):
                 try:
                     plan = generate_daily_plan(
-                        st.session_state.tasks_df,
-                        available_hours,
-                        energy_level,
-                        planning_preference,
-                        datetime.now().time(),
-                        date.today(),
+                        tasks_df=st.session_state.tasks_df,
+                        available_hours=available_hours,
+                        energy_level=energy_level,
+                        current_time=datetime.now().time(),
+                        current_date=date.today(),
+                        planning_preference=planning_preference,
                     )
                     st.session_state.schedule_df = pd.DataFrame(
                         plan["schedule"],
@@ -306,6 +330,7 @@ with st.sidebar:
                     st.error(str(exc))
                 except Exception:
                     st.error("LifePilot could not generate a plan right now. Please try again.")
+
 
 
 tasks_df = st.session_state.tasks_df
@@ -915,14 +940,14 @@ if replan_submitted:
         with st.spinner("LifePilot is rebuilding your day..."):
             try:
                 replanned = replan_day(
-                    st.session_state.tasks_df,
-                    old_schedule,
-                    disruption_details,
-                    available_hours,
-                    energy_level,
-                    datetime.now().time(),
-                    date.today(),
-                    planning_preference,
+                    tasks_df=st.session_state.tasks_df,
+                    schedule_df=old_schedule,
+                    disruption=disruption_details,
+                    available_hours=available_hours,
+                    energy_level=energy_level,
+                    current_time=datetime.now().time(),
+                    current_date=date.today(),
+                    planning_preference=planning_preference,
                 )
                 new_schedule = pd.DataFrame(
                     replanned["schedule"],
