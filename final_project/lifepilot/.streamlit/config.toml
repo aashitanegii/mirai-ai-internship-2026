@@ -1,7 +1,2 @@
-﻿[theme]
-base="light"
-primaryColor="#267a61"
-backgroundColor="#f4f6f3"
-secondaryBackgroundColor="#ffffff"
-textColor="#17221c"
-font="serif"
+[theme]
+base=" light\nprimaryColor=\#267a61\nbackgroundColor=\#f4f6f3\nsecondaryBackgroundColor=\#ffffff\ntextColor=\#17221c\nfont=\serif\n
