@@ -12,22 +12,26 @@ Turn messy thoughts, interruptions, and constraints into a realistic mission you
 
 ## Product Screenshots
 
-### 1. Overview
+### 2. Overview — Command Center
 ![Overview](assets/screenshots/overview.png)
 
-### 2. Capture
+### 3. Capture — Brain Dump to Structured Tasks
 ![Capture](assets/screenshots/capture.png)
 
-### 3. Plan
+### 4. Plan — AI-Generated Daily Mission
 ![Plan](assets/screenshots/plan.png)
 
-### 4. Intelligence
-![Intelligence](assets/screenshots/intelligence.png)
+*Execute with clarity: LifePilot turns the generated plan into concrete time blocks, priorities, and an actionable schedule.*
 
-### 5. Execute
+### 5. Execute — Today's Mission
 ![Execute](assets/screenshots/execute.png)
 
-### 6. Reflect
+### 6. Adapt — Adaptive Replanning
+![Adapt](assets/screenshots/adapt.png)
+
+*When plans change, LifePilot adapts instead of starting over—rebalancing the day while explaining its scheduling decisions.*
+
+### 7. Reflect — LifeLoad Analytics
 ![Reflect](assets/screenshots/reflect.png)
 
 ## Feature Overview
