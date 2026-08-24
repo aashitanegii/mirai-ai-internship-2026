@@ -8,7 +8,7 @@ Turn messy thoughts, interruptions, and constraints into a realistic mission you
 
 ## Live App
 
-[Live App](#) - *(Deployment URL to be added after Streamlit Community Cloud deployment)*
+[LifePilot · Streamlit](https://aashitanegii-mirai-ai-internsh-final-projectlifepilotapp-udj2b4.streamlit.app/?)
 
 ## Product Screenshots
 
