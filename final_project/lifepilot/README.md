@@ -1,5 +1,7 @@
 # LifePilot
 
+![LifePilot Cover](assets/screenshots/cover.png)
+
 ## AI-powered personal planning, scheduling, execution, and adaptive replanning
 
 Turn messy thoughts, interruptions, and constraints into a realistic mission you can actually execute. LifePilot acts as your personal command center, analyzing your tasks through Google Gemini to help you make intelligent scheduling decisions under capacity constraints.
@@ -8,16 +10,25 @@ Turn messy thoughts, interruptions, and constraints into a realistic mission you
 
 [Live App](#) - *(Deployment URL to be added after Streamlit Community Cloud deployment)*
 
-## Screenshots
+## Product Screenshots
 
-*(Placeholder for Screenshots)*
+### 1. Overview
+![Overview](assets/screenshots/overview.png)
 
-1. **Overview** — Hero banner and Today's State dashboard
-2. **Capture** — Multimodal input forms
-3. **Plan** — AI-generated schedule and explanations
-4. **Execute** — CURRENT / NEXT / LATER execution surface
-5. **Adapt** — Replan comparison before/after
-6. **Reflect** — Data-driven LifeLoad analytics
+### 2. Capture
+![Capture](assets/screenshots/capture.png)
+
+### 3. Plan
+![Plan](assets/screenshots/plan.png)
+
+### 4. Intelligence
+![Intelligence](assets/screenshots/intelligence.png)
+
+### 5. Execute
+![Execute](assets/screenshots/execute.png)
+
+### 6. Reflect
+![Reflect](assets/screenshots/reflect.png)
 
 ## Feature Overview
 
