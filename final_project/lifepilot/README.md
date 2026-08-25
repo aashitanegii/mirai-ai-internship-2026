@@ -14,6 +14,10 @@ Turn messy thoughts, interruptions, and constraints into a realistic mission you
 
 [Watch the LifePilot Demo on YouTube](https://youtu.be/JnGru2nrijQ)
 
+## LinkedIn Post
+
+[Read the Launch Post on LinkedIn](https://www.linkedin.com/posts/aashita-negi-1b6607268_ai-generativeai-gemini-activity-7497902937780674560-g3Sd?utm_source=share&utm_medium=member_desktop&rcm=ACoAAEGV-FoBDBYJslEpWTEQuo4jmUFY3akVNik)
+
 ## Product Screenshots
 
 ### 2. Overview — Command Center
