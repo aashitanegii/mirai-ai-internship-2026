@@ -10,6 +10,10 @@ Turn messy thoughts, interruptions, and constraints into a realistic mission you
 
 [LifePilot · Streamlit](https://aashitanegii-mirai-ai-internsh-final-projectlifepilotapp-udj2b4.streamlit.app/?)
 
+## Demo Video
+
+[Watch the LifePilot Demo on YouTube](https://youtu.be/JnGru2nrijQ)
+
 ## Product Screenshots
 
 ### 2. Overview — Command Center
